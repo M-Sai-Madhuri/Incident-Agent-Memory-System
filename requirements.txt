@@ -1,0 +1,8 @@
+streamlit
+hindsight-client
+python-dotenv
+pandas
+openai
+passlib[bcrypt]
+pyjwt
+slowapi

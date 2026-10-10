@@ -1,0 +1,58 @@
+# INCIDENT MEMORY COPILOT - PROJECT GUIDE
+
+## What is this project?
+The **Incident Memory Copilot** is an AI-powered assistant designed for Site Reliability Engineers (SREs) and DevOps teams. 
+
+When a critical system goes down (a "SEV-1" incident), engineers often scramble to figure out what is wrong. Often, the same issue has happened in the past, but the knowledge of how to fix it is buried in old Slack messages, documents, or the memories of senior engineers.
+
+This project solves that by acting as a "Corporate Brain" for incidents. It uses two main technologies:
+1. **Hindsight Cloud:** A smart database (vector database) that stores all past incidents, runbooks (how-to guides), and postmortems (after-action reports).
+2. **Grok AI (LLM):** An advanced AI that reads the current incident, looks up similar past incidents in Hindsight Cloud, and gives the engineer a summary of what to do right now, based on what worked (or failed) in the past.
+
+---
+
+## How the UI Works (What you see on the screen)
+The application is built using Streamlit, which creates a web-based dashboard with a sidebar for navigation.
+
+### 1. Investigate Incident (Main Page)
+This is where the magic happens during an active outage.
+- **Inputs you can give:**
+  - **Service Name:** e.g., `Payment API`, `User Authentication`, `Database`.
+  - **Incident Severity:** e.g., `SEV-1` (critical), `SEV-2`, etc.
+  - **Incident Description:** e.g., "The API is throwing 500 errors and the database connection pool is exhausted."
+
+- **What happens when you click "Investigate":**
+  The app searches the Hindsight Cloud for past incidents with similar descriptions. It feeds those past incidents to Grok AI.
+
+- **Outputs you will get:**
+  An AI-generated "Investigation Report" that contains:
+  - 🚨 **Incident Summary:** A quick recap of the current issue.
+  - 🧠 **Historical Memory & Root Causes:** What caused similar issues in the past (e.g., "Last time this happened, it was a bad deployment").
+  - ⚠️ **Previous Actions:** What the team did to fix it last time (Successful actions) and what they tried that didn't work (Failed actions).
+  - 💡 **Lessons Learned:** Key takeaways from past outages.
+  - 🛠 **Recommended Investigation Steps:** A step-by-step guide on what the engineer should do right now to fix the current issue.
+
+### 2. Hindsight Status (Sidebar/Page)
+This is an administrative page.
+- **Purpose:** To verify that your app is successfully connected to the Hindsight Cloud database and to see how much data is stored in your "Memory Bank."
+- **Outputs you will get:**
+  - Connection Status (Connected/Not Connected)
+  - Memory Bank Name (`incident-response`)
+  - Counts of stored Runbooks, Postmortems, and Past Incidents.
+
+---
+
+## Example Scenario to Demo
+
+**INPUT:**
+- Service: `Checkout Service`
+- Severity: `SEV-1`
+- Description: `High latency on checkout page, users are unable to complete purchases. Redis cache seems to be evicting keys constantly.`
+
+**EXPECTED OUTPUT:**
+The AI will output a report saying that a similar Redis issue happened 6 months ago. It will warn you that simply restarting Redis (which failed last time) is a bad idea, and will instead recommend checking the memory limits and scaling up the cache instance, because that is what successfully resolved the outage last time.
+
+## Why is this impressive for a Hackathon?
+1. It uses **RAG (Retrieval-Augmented Generation)** to make the AI smart about your specific company data.
+2. It solves a real-world, high-stress problem (downtime costs companies thousands of dollars per minute).
+3. It integrates real cloud APIs (Hindsight Cloud) and a state-of-the-art LLM (Grok).

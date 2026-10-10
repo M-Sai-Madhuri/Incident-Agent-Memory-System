@@ -1,0 +1,47 @@
+{
+    "admin": {
+        "id": "A-001",
+        "username": "admin",
+        "email": "admin@gmail.com",
+        "role": "manager",
+        "hashed_password": "$2b$12$xKK.5ejR.hhPYIhMFQvCK.qM7WHASqL2MrIxdzcjoLSUzzZycunxa",
+        "plaintext_password": "Admin@123",
+        "stats": {
+            "searched": 6,
+            "approved": 0,
+            "declined": 0,
+            "postmortems": 0,
+            "runbooks": 0
+        }
+    },
+    "Ram": {
+        "id": "U-001",
+        "username": "Ram",
+        "email": "ram123@gmail.com",
+        "role": "developer",
+        "hashed_password": "$2b$12$LXGytKWIbKsusfYPzxINeOtbxKNCbo4CnSAM2Z6/GUhzaSxjeeJLC",
+        "plaintext_password": "Ram@1234",
+        "stats": {
+            "searched": 2,
+            "approved": 0,
+            "declined": 0,
+            "postmortems": 0,
+            "runbooks": 0
+        }
+    },
+    "Shiva": {
+        "id": "U-002",
+        "username": "Shiva",
+        "email": "shiva123@gmail.com",
+        "role": "Analyst",
+        "hashed_password": "$2b$12$HRUVmbouw.CoaePqNdSg6uDRUspFkZiEDT8v5ja2.xywMbfIeIuQa",
+        "plaintext_password": "Shiva@1234",
+        "stats": {
+            "searched": 0,
+            "approved": 0,
+            "declined": 0,
+            "postmortems": 0,
+            "runbooks": 0
+        }
+    }
+}

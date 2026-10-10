@@ -1,0 +1,42 @@
+# INCIDENT MEMORY COPILOT: PROJECT OVERVIEW & PITCH DOCUMENT
+
+## 1. Executive Summary
+The **Incident Memory Copilot** is an AI-driven, Retrieval-Augmented Generation (RAG) platform designed specifically for Site Reliability Engineers (SREs) and DevOps teams. Its primary goal is to drastically reduce Mean Time To Resolution (MTTR) during critical outages. 
+
+When a SEV-1 incident strikes, engineers typically lose valuable time digging through old Slack threads, Jira tickets, and fragmented runbooks. This project acts as a "Corporate Brain," instantly retrieving historical incidents, postmortems, and runbooks, and utilizing a powerful LLM to synthesize actionable, evidence-backed investigation steps.
+
+## 2. Core Value Proposition (Why choose this project?)
+If you are evaluating this project against another, here is why Incident Memory Copilot stands out:
+* **Solves a Universal, High-Stakes Problem:** Every tech company experiences outages. The cost of downtime is measured in thousands of dollars per minute. This tool directly mitigates that cost by accelerating recovery.
+* **Prevents Repeated Mistakes:** By automatically surfacing "failed actions" from past postmortems, it stops engineers from trying fixes that have historically worsened the problem (e.g., restarting a database when it actually needs its connection pool limits restored).
+* **Democratizes Senior Knowledge:** Junior on-call engineers instantly gain the context and troubleshooting intuition of senior engineers who resolved similar issues months or years ago.
+* **Graceful Degradation:** The system features a robust deterministic fallback. If the LLM API is unavailable, the application still provides intelligent, scenario-specific recommendations using local data, ensuring it is always reliable during a crisis.
+
+## 3. Architecture & Technical Stack
+The project employs a modern, highly resilient architecture:
+* **Frontend:** Streamlit (Python) - Provides a clean, responsive dashboard for incident investigation and organizational memory search.
+* **Vector Database / Semantic Search:** **Hindsight Cloud** - The core retrieval engine.
+* **Intelligence / LLM:** Google Gemini (gemini-3.8-flash) - Processes the retrieved context and generates the final incident report.
+
+### The RAG Workflow:
+1. **Incident Submitted:** Engineer inputs the service name, severity, and symptoms.
+2. **Search Hindsight (Retrieval):** The system queries the Hindsight vector database to find semantically similar past incidents and postmortems.
+3. **Context Injection:** The retrieved historical evidence (successful actions, failed actions, root causes) is injected into a prompt.
+4. **LLM Synthesis (Generation):** Google Gemini analyzes the current symptoms against the historical context.
+5. **Actionable Output:** A structured report is presented to the user, complete with a "Memory-Driven Insight" and specific recommendations.
+
+## 4. How Much is Hindsight Used?
+**Hindsight is the absolute backbone of this project.** While the LLM (Gemini) makes the output readable, Hindsight provides the *truth*. 
+* **Heavy Reliance:** 100% of the RAG pipeline's context relies on Hindsight. Without Hindsight's vector search capabilities, the LLM would just be guessing based on generic internet knowledge.
+* **Semantic Matching:** Hindsight isn't just doing keyword searches; it understands the semantic meaning of "database connection pool exhausted" and matches it with past incidents, even if the wording was slightly different.
+* **Comprehensive Recall:** It retrieves across multiple data types—incidents (what happened), postmortems (what we learned), and runbooks (how to fix it)—feeding a rich, multi-dimensional context to the LLM.
+
+## 5. Current State of the Project
+As of the latest iteration, the project is fully functional and demo-ready:
+* **UI Integration:** The Streamlit interface smoothly aggregates historical memories, removing redundant descriptions and grouping Incident IDs and Postmortem IDs cleanly.
+* **LLM Integration:** Successfully migrated from Grok to Google Gemini (`gemini-3.8-flash`), utilizing the latest `google.genai` SDK.
+* **Resilience:** Implemented 3x retry logic for temporary LLM server overloads (e.g., 503 errors) and a seamless deterministic fallback mechanism if the API is completely down.
+* **Demo Scenarios:** Pre-configured test scenarios (e.g., "Redis Cache Outage", "Kubernetes OOM") are ready to demonstrate the system's ability to differentiate between effective and destructive actions based on historical data.
+
+## Conclusion
+The Incident Memory Copilot is not just a standard chatbot wrapper; it is a specialized, context-aware operational tool. By heavily leveraging Hindsight for intelligent retrieval and Gemini for synthesis, it delivers immediate, measurable ROI by keeping critical systems online and minimizing human error during stressful outages.

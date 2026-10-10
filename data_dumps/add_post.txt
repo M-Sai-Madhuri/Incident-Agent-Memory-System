@@ -1,0 +1,813 @@
+# Contribute memory
+
+
+### SRE STREAM EXAMPLES ###
+
+## Example 1
+Stream / Team: SRE
+Service / Component: user-auth-service
+Root Cause: Redis token cache evicted active sessions due to OOM limit reached without LRU policy configured.
+What Worked: Flushed stale keys manually, Increased maxmemory to 4GB
+What Failed: Restarting the auth pods (caused connection storms)
+Lessons Learned: Always configure an eviction policy (like volatile-lru) when caching sessions, even if TTLs are present.
+Action Items / Prevention: Set maxmemory-policy to volatile-lru, Setup Datadog alert for Redis memory > 80%
+Resolution Steps: Increased limits, Redeployed
+
+## Example 2
+Stream / Team: SRE
+Service / Component: inventory-db
+Root Cause: Runaway unindexed query from the new catalog microservice caused 100% CPU on Postgres primary.
+What Worked: Killed the active query via pg_stat_activity, Rolled back catalog service deployment
+What Failed: Attempting to failover to read-replica
+Lessons Learned: Code reviews must require EXPLAIN ANALYZE for any new database queries fetching collections.
+Action Items / Prevention: Add index on product_category column, Implement query timeout of 5s on catalog service
+Resolution Steps: Killed query, Rolled back
+
+## Example 3
+Stream / Team: SRE
+Service / Component: payment-gateway
+Root Cause: Third-party API webhook certificate expired, causing ingress to reject validation callbacks.
+What Worked: Temporarily bypassed strict cert validation to clear backlog, Updated root CA bundle
+What Failed: Scaling up replicas
+Lessons Learned: External API certificate bundles need automated rotation and monitoring before expiration.
+Action Items / Prevention: Add Prometheus exporter for SSL cert expiration, Automate CA bundle updates
+Resolution Steps: Bypassed validation, Updated CA
+
+## Example 4
+Stream / Team: SRE
+Service / Component: search-indexer
+Root Cause: Kafka consumer group rebalancing loop caused by max.poll.interval.ms being too low.
+What Worked: Increased max.poll.interval.ms to 300000, Restarted consumer group
+What Failed: Deleting and recreating the Kafka topic
+Lessons Learned: When processing heavy message payloads, default Kafka consumer timeout configs are usually insufficient.
+Action Items / Prevention: Tune consumer timeout configs in helm chart, Add alert for consumer group rebalance rate
+Resolution Steps: Tuned Kafka limits, Restarted consumers
+
+## Example 5
+Stream / Team: SRE
+Service / Component: checkout-worker
+Root Cause: Node.js event loop blocked by synchronous JSON.parse on a massive payload.
+What Worked: Filtered out massive payloads at the API gateway, Deployed hotfix using streaming parser
+What Failed: Increasing pod memory limits
+Lessons Learned: Never use synchronous operations on unbounded external inputs in Node.js.
+Action Items / Prevention: Replace JSON.parse with stream-json, Enforce payload limit at Nginx
+Resolution Steps: Deployed streaming fix, Added API limit
+
+## Example 6
+Stream / Team: SRE
+Service / Component: user-auth-service-v2
+Root Cause: Redis token cache evicted active sessions due to OOM limit reached without LRU policy configured.
+What Worked: Flushed stale keys manually, Increased maxmemory to 4GB
+What Failed: Restarting the auth pods (caused connection storms)
+Lessons Learned: Always configure an eviction policy (like volatile-lru) when caching sessions, even if TTLs are present.
+Action Items / Prevention: Set maxmemory-policy to volatile-lru, Setup Datadog alert for Redis memory > 80%
+Resolution Steps: Increased limits, Redeployed
+
+## Example 7
+Stream / Team: SRE
+Service / Component: inventory-db-v2
+Root Cause: Runaway unindexed query from the new catalog microservice caused 100% CPU on Postgres primary.
+What Worked: Killed the active query via pg_stat_activity, Rolled back catalog service deployment
+What Failed: Attempting to failover to read-replica
+Lessons Learned: Code reviews must require EXPLAIN ANALYZE for any new database queries fetching collections.
+Action Items / Prevention: Add index on product_category column, Implement query timeout of 5s on catalog service
+Resolution Steps: Killed query, Rolled back
+
+## Example 8
+Stream / Team: SRE
+Service / Component: payment-gateway-v2
+Root Cause: Third-party API webhook certificate expired, causing ingress to reject validation callbacks.
+What Worked: Temporarily bypassed strict cert validation to clear backlog, Updated root CA bundle
+What Failed: Scaling up replicas
+Lessons Learned: External API certificate bundles need automated rotation and monitoring before expiration.
+Action Items / Prevention: Add Prometheus exporter for SSL cert expiration, Automate CA bundle updates
+Resolution Steps: Bypassed validation, Updated CA
+
+## Example 9
+Stream / Team: SRE
+Service / Component: search-indexer-v2
+Root Cause: Kafka consumer group rebalancing loop caused by max.poll.interval.ms being too low.
+What Worked: Increased max.poll.interval.ms to 300000, Restarted consumer group
+What Failed: Deleting and recreating the Kafka topic
+Lessons Learned: When processing heavy message payloads, default Kafka consumer timeout configs are usually insufficient.
+Action Items / Prevention: Tune consumer timeout configs in helm chart, Add alert for consumer group rebalance rate
+Resolution Steps: Tuned Kafka limits, Restarted consumers
+
+## Example 10
+Stream / Team: SRE
+Service / Component: checkout-worker-v2
+Root Cause: Node.js event loop blocked by synchronous JSON.parse on a massive payload.
+What Worked: Filtered out massive payloads at the API gateway, Deployed hotfix using streaming parser
+What Failed: Increasing pod memory limits
+Lessons Learned: Never use synchronous operations on unbounded external inputs in Node.js.
+Action Items / Prevention: Replace JSON.parse with stream-json, Enforce payload limit at Nginx
+Resolution Steps: Deployed streaming fix, Added API limit
+
+## Example 11
+Stream / Team: SRE
+Service / Component: user-auth-service-v3
+Root Cause: Redis token cache evicted active sessions due to OOM limit reached without LRU policy configured.
+What Worked: Flushed stale keys manually, Increased maxmemory to 4GB
+What Failed: Restarting the auth pods (caused connection storms)
+Lessons Learned: Always configure an eviction policy (like volatile-lru) when caching sessions, even if TTLs are present.
+Action Items / Prevention: Set maxmemory-policy to volatile-lru, Setup Datadog alert for Redis memory > 80%
+Resolution Steps: Increased limits, Redeployed
+
+## Example 12
+Stream / Team: SRE
+Service / Component: inventory-db-v3
+Root Cause: Runaway unindexed query from the new catalog microservice caused 100% CPU on Postgres primary.
+What Worked: Killed the active query via pg_stat_activity, Rolled back catalog service deployment
+What Failed: Attempting to failover to read-replica
+Lessons Learned: Code reviews must require EXPLAIN ANALYZE for any new database queries fetching collections.
+Action Items / Prevention: Add index on product_category column, Implement query timeout of 5s on catalog service
+Resolution Steps: Killed query, Rolled back
+
+## Example 13
+Stream / Team: SRE
+Service / Component: payment-gateway-v3
+Root Cause: Third-party API webhook certificate expired, causing ingress to reject validation callbacks.
+What Worked: Temporarily bypassed strict cert validation to clear backlog, Updated root CA bundle
+What Failed: Scaling up replicas
+Lessons Learned: External API certificate bundles need automated rotation and monitoring before expiration.
+Action Items / Prevention: Add Prometheus exporter for SSL cert expiration, Automate CA bundle updates
+Resolution Steps: Bypassed validation, Updated CA
+
+## Example 14
+Stream / Team: SRE
+Service / Component: search-indexer-v3
+Root Cause: Kafka consumer group rebalancing loop caused by max.poll.interval.ms being too low.
+What Worked: Increased max.poll.interval.ms to 300000, Restarted consumer group
+What Failed: Deleting and recreating the Kafka topic
+Lessons Learned: When processing heavy message payloads, default Kafka consumer timeout configs are usually insufficient.
+Action Items / Prevention: Tune consumer timeout configs in helm chart, Add alert for consumer group rebalance rate
+Resolution Steps: Tuned Kafka limits, Restarted consumers
+
+## Example 15
+Stream / Team: SRE
+Service / Component: checkout-worker-v3
+Root Cause: Node.js event loop blocked by synchronous JSON.parse on a massive payload.
+What Worked: Filtered out massive payloads at the API gateway, Deployed hotfix using streaming parser
+What Failed: Increasing pod memory limits
+Lessons Learned: Never use synchronous operations on unbounded external inputs in Node.js.
+Action Items / Prevention: Replace JSON.parse with stream-json, Enforce payload limit at Nginx
+Resolution Steps: Deployed streaming fix, Added API limit
+
+## Example 16
+Stream / Team: SRE
+Service / Component: user-auth-service-v4
+Root Cause: Redis token cache evicted active sessions due to OOM limit reached without LRU policy configured.
+What Worked: Flushed stale keys manually, Increased maxmemory to 4GB
+What Failed: Restarting the auth pods (caused connection storms)
+Lessons Learned: Always configure an eviction policy (like volatile-lru) when caching sessions, even if TTLs are present.
+Action Items / Prevention: Set maxmemory-policy to volatile-lru, Setup Datadog alert for Redis memory > 80%
+Resolution Steps: Increased limits, Redeployed
+
+## Example 17
+Stream / Team: SRE
+Service / Component: inventory-db-v4
+Root Cause: Runaway unindexed query from the new catalog microservice caused 100% CPU on Postgres primary.
+What Worked: Killed the active query via pg_stat_activity, Rolled back catalog service deployment
+What Failed: Attempting to failover to read-replica
+Lessons Learned: Code reviews must require EXPLAIN ANALYZE for any new database queries fetching collections.
+Action Items / Prevention: Add index on product_category column, Implement query timeout of 5s on catalog service
+Resolution Steps: Killed query, Rolled back
+
+## Example 18
+Stream / Team: SRE
+Service / Component: payment-gateway-v4
+Root Cause: Third-party API webhook certificate expired, causing ingress to reject validation callbacks.
+What Worked: Temporarily bypassed strict cert validation to clear backlog, Updated root CA bundle
+What Failed: Scaling up replicas
+Lessons Learned: External API certificate bundles need automated rotation and monitoring before expiration.
+Action Items / Prevention: Add Prometheus exporter for SSL cert expiration, Automate CA bundle updates
+Resolution Steps: Bypassed validation, Updated CA
+
+## Example 19
+Stream / Team: SRE
+Service / Component: search-indexer-v4
+Root Cause: Kafka consumer group rebalancing loop caused by max.poll.interval.ms being too low.
+What Worked: Increased max.poll.interval.ms to 300000, Restarted consumer group
+What Failed: Deleting and recreating the Kafka topic
+Lessons Learned: When processing heavy message payloads, default Kafka consumer timeout configs are usually insufficient.
+Action Items / Prevention: Tune consumer timeout configs in helm chart, Add alert for consumer group rebalance rate
+Resolution Steps: Tuned Kafka limits, Restarted consumers
+
+## Example 20
+Stream / Team: SRE
+Service / Component: checkout-worker-v4
+Root Cause: Node.js event loop blocked by synchronous JSON.parse on a massive payload.
+What Worked: Filtered out massive payloads at the API gateway, Deployed hotfix using streaming parser
+What Failed: Increasing pod memory limits
+Lessons Learned: Never use synchronous operations on unbounded external inputs in Node.js.
+Action Items / Prevention: Replace JSON.parse with stream-json, Enforce payload limit at Nginx
+Resolution Steps: Deployed streaming fix, Added API limit
+
+
+### DevOps STREAM EXAMPLES ###
+
+## Example 1
+Stream / Team: DevOps
+Service / Component: ci-cd-pipeline
+Root Cause: GitHub Actions runner ran out of disk space during docker build because of dangling images.
+What Worked: Ran docker system prune, Added cleanup step before build
+What Failed: Rerunning the workflow
+Lessons Learned: Self-hosted runners need aggressive, scheduled disk cleanup to handle large mono-repos.
+Action Items / Prevention: Add daily cron job for docker system prune, Monitor disk usage on runners
+Resolution Steps: Cleaned up disk, Restarted pipeline
+
+## Example 2
+Stream / Team: DevOps
+Service / Component: terraform-state
+Root Cause: State file locked indefinitely by a crashed CI job, preventing subsequent deployments.
+What Worked: Manually broke the state lock using terraform force-unlock
+What Failed: Re-triggering the deployment
+Lessons Learned: CI jobs running Terraform must have guaranteed post-steps to release locks on failure.
+Action Items / Prevention: Configure S3/DynamoDB lock timeout, Handle trap signals in CI shell scripts
+Resolution Steps: Forced unlock, Reran apply
+
+## Example 3
+Stream / Team: DevOps
+Service / Component: helm-controller
+Root Cause: ArgoCD out of sync due to a manual kubectl edit on a managed deployment.
+What Worked: Hard refreshed ArgoCD application, Enabled auto-sync with prune
+What Failed: Trying to merge the live state back into git
+Lessons Learned: Never manually edit resources managed by GitOps controllers.
+Action Items / Prevention: Remove kubectl write access for developers, Enable ArgoCD auto-prune
+Resolution Steps: Hard refresh, Auto-synced
+
+## Example 4
+Stream / Team: DevOps
+Service / Component: prometheus-stack
+Root Cause: Prometheus ran out of memory digesting millions of high-cardinality metrics from a bad release.
+What Worked: Added metric relabeling config to drop the offending labels, Increased memory limits
+What Failed: Restarting Prometheus server
+Lessons Learned: Applications MUST not include unbounded variable data (like user IDs) in metric labels.
+Action Items / Prevention: Audit all custom metrics, Implement Prometheus metric ingestion limits
+Resolution Steps: Dropped bad metrics, Scaled resources
+
+## Example 5
+Stream / Team: DevOps
+Service / Component: aws-network
+Root Cause: NAT Gateway port exhaustion caused by a misconfigured lambda making thousands of rapid external connections.
+What Worked: Migrated Lambda to a public subnet temporarily, Fixed Lambda connection pooling
+What Failed: Adding more NAT gateways (hit quota)
+Lessons Learned: Serverless functions making external API calls need connection reuse.
+Action Items / Prevention: Enable TCP Keep-Alive in Lambda HTTP clients, Monitor NAT Gateway ErrorPortAllocation
+Resolution Steps: Fixed lambda config, Flushed connections
+
+## Example 6
+Stream / Team: DevOps
+Service / Component: ci-cd-pipeline-v2
+Root Cause: GitHub Actions runner ran out of disk space during docker build because of dangling images.
+What Worked: Ran docker system prune, Added cleanup step before build
+What Failed: Rerunning the workflow
+Lessons Learned: Self-hosted runners need aggressive, scheduled disk cleanup to handle large mono-repos.
+Action Items / Prevention: Add daily cron job for docker system prune, Monitor disk usage on runners
+Resolution Steps: Cleaned up disk, Restarted pipeline
+
+## Example 7
+Stream / Team: DevOps
+Service / Component: terraform-state-v2
+Root Cause: State file locked indefinitely by a crashed CI job, preventing subsequent deployments.
+What Worked: Manually broke the state lock using terraform force-unlock
+What Failed: Re-triggering the deployment
+Lessons Learned: CI jobs running Terraform must have guaranteed post-steps to release locks on failure.
+Action Items / Prevention: Configure S3/DynamoDB lock timeout, Handle trap signals in CI shell scripts
+Resolution Steps: Forced unlock, Reran apply
+
+## Example 8
+Stream / Team: DevOps
+Service / Component: helm-controller-v2
+Root Cause: ArgoCD out of sync due to a manual kubectl edit on a managed deployment.
+What Worked: Hard refreshed ArgoCD application, Enabled auto-sync with prune
+What Failed: Trying to merge the live state back into git
+Lessons Learned: Never manually edit resources managed by GitOps controllers.
+Action Items / Prevention: Remove kubectl write access for developers, Enable ArgoCD auto-prune
+Resolution Steps: Hard refresh, Auto-synced
+
+## Example 9
+Stream / Team: DevOps
+Service / Component: prometheus-stack-v2
+Root Cause: Prometheus ran out of memory digesting millions of high-cardinality metrics from a bad release.
+What Worked: Added metric relabeling config to drop the offending labels, Increased memory limits
+What Failed: Restarting Prometheus server
+Lessons Learned: Applications MUST not include unbounded variable data (like user IDs) in metric labels.
+Action Items / Prevention: Audit all custom metrics, Implement Prometheus metric ingestion limits
+Resolution Steps: Dropped bad metrics, Scaled resources
+
+## Example 10
+Stream / Team: DevOps
+Service / Component: aws-network-v2
+Root Cause: NAT Gateway port exhaustion caused by a misconfigured lambda making thousands of rapid external connections.
+What Worked: Migrated Lambda to a public subnet temporarily, Fixed Lambda connection pooling
+What Failed: Adding more NAT gateways (hit quota)
+Lessons Learned: Serverless functions making external API calls need connection reuse.
+Action Items / Prevention: Enable TCP Keep-Alive in Lambda HTTP clients, Monitor NAT Gateway ErrorPortAllocation
+Resolution Steps: Fixed lambda config, Flushed connections
+
+## Example 11
+Stream / Team: DevOps
+Service / Component: ci-cd-pipeline-v3
+Root Cause: GitHub Actions runner ran out of disk space during docker build because of dangling images.
+What Worked: Ran docker system prune, Added cleanup step before build
+What Failed: Rerunning the workflow
+Lessons Learned: Self-hosted runners need aggressive, scheduled disk cleanup to handle large mono-repos.
+Action Items / Prevention: Add daily cron job for docker system prune, Monitor disk usage on runners
+Resolution Steps: Cleaned up disk, Restarted pipeline
+
+## Example 12
+Stream / Team: DevOps
+Service / Component: terraform-state-v3
+Root Cause: State file locked indefinitely by a crashed CI job, preventing subsequent deployments.
+What Worked: Manually broke the state lock using terraform force-unlock
+What Failed: Re-triggering the deployment
+Lessons Learned: CI jobs running Terraform must have guaranteed post-steps to release locks on failure.
+Action Items / Prevention: Configure S3/DynamoDB lock timeout, Handle trap signals in CI shell scripts
+Resolution Steps: Forced unlock, Reran apply
+
+## Example 13
+Stream / Team: DevOps
+Service / Component: helm-controller-v3
+Root Cause: ArgoCD out of sync due to a manual kubectl edit on a managed deployment.
+What Worked: Hard refreshed ArgoCD application, Enabled auto-sync with prune
+What Failed: Trying to merge the live state back into git
+Lessons Learned: Never manually edit resources managed by GitOps controllers.
+Action Items / Prevention: Remove kubectl write access for developers, Enable ArgoCD auto-prune
+Resolution Steps: Hard refresh, Auto-synced
+
+## Example 14
+Stream / Team: DevOps
+Service / Component: prometheus-stack-v3
+Root Cause: Prometheus ran out of memory digesting millions of high-cardinality metrics from a bad release.
+What Worked: Added metric relabeling config to drop the offending labels, Increased memory limits
+What Failed: Restarting Prometheus server
+Lessons Learned: Applications MUST not include unbounded variable data (like user IDs) in metric labels.
+Action Items / Prevention: Audit all custom metrics, Implement Prometheus metric ingestion limits
+Resolution Steps: Dropped bad metrics, Scaled resources
+
+## Example 15
+Stream / Team: DevOps
+Service / Component: aws-network-v3
+Root Cause: NAT Gateway port exhaustion caused by a misconfigured lambda making thousands of rapid external connections.
+What Worked: Migrated Lambda to a public subnet temporarily, Fixed Lambda connection pooling
+What Failed: Adding more NAT gateways (hit quota)
+Lessons Learned: Serverless functions making external API calls need connection reuse.
+Action Items / Prevention: Enable TCP Keep-Alive in Lambda HTTP clients, Monitor NAT Gateway ErrorPortAllocation
+Resolution Steps: Fixed lambda config, Flushed connections
+
+## Example 16
+Stream / Team: DevOps
+Service / Component: ci-cd-pipeline-v4
+Root Cause: GitHub Actions runner ran out of disk space during docker build because of dangling images.
+What Worked: Ran docker system prune, Added cleanup step before build
+What Failed: Rerunning the workflow
+Lessons Learned: Self-hosted runners need aggressive, scheduled disk cleanup to handle large mono-repos.
+Action Items / Prevention: Add daily cron job for docker system prune, Monitor disk usage on runners
+Resolution Steps: Cleaned up disk, Restarted pipeline
+
+## Example 17
+Stream / Team: DevOps
+Service / Component: terraform-state-v4
+Root Cause: State file locked indefinitely by a crashed CI job, preventing subsequent deployments.
+What Worked: Manually broke the state lock using terraform force-unlock
+What Failed: Re-triggering the deployment
+Lessons Learned: CI jobs running Terraform must have guaranteed post-steps to release locks on failure.
+Action Items / Prevention: Configure S3/DynamoDB lock timeout, Handle trap signals in CI shell scripts
+Resolution Steps: Forced unlock, Reran apply
+
+## Example 18
+Stream / Team: DevOps
+Service / Component: helm-controller-v4
+Root Cause: ArgoCD out of sync due to a manual kubectl edit on a managed deployment.
+What Worked: Hard refreshed ArgoCD application, Enabled auto-sync with prune
+What Failed: Trying to merge the live state back into git
+Lessons Learned: Never manually edit resources managed by GitOps controllers.
+Action Items / Prevention: Remove kubectl write access for developers, Enable ArgoCD auto-prune
+Resolution Steps: Hard refresh, Auto-synced
+
+## Example 19
+Stream / Team: DevOps
+Service / Component: prometheus-stack-v4
+Root Cause: Prometheus ran out of memory digesting millions of high-cardinality metrics from a bad release.
+What Worked: Added metric relabeling config to drop the offending labels, Increased memory limits
+What Failed: Restarting Prometheus server
+Lessons Learned: Applications MUST not include unbounded variable data (like user IDs) in metric labels.
+Action Items / Prevention: Audit all custom metrics, Implement Prometheus metric ingestion limits
+Resolution Steps: Dropped bad metrics, Scaled resources
+
+## Example 20
+Stream / Team: DevOps
+Service / Component: aws-network-v4
+Root Cause: NAT Gateway port exhaustion caused by a misconfigured lambda making thousands of rapid external connections.
+What Worked: Migrated Lambda to a public subnet temporarily, Fixed Lambda connection pooling
+What Failed: Adding more NAT gateways (hit quota)
+Lessons Learned: Serverless functions making external API calls need connection reuse.
+Action Items / Prevention: Enable TCP Keep-Alive in Lambda HTTP clients, Monitor NAT Gateway ErrorPortAllocation
+Resolution Steps: Fixed lambda config, Flushed connections
+
+
+### Software Engineering STREAM EXAMPLES ###
+
+## Example 1
+Stream / Team: Software Engineering
+Service / Component: user-profile-ui
+Root Cause: React infinite re-render loop triggered by a missing dependency array in a useEffect hook.
+What Worked: Rolled back frontend deployment, Added empty dependency array to hook
+What Failed: Clearing browser cache
+Lessons Learned: useEffect hooks without dependency arrays will execute on every single render.
+Action Items / Prevention: Enable exhaustive-deps eslint rule, Add CI block on lint warnings
+Resolution Steps: Fixed hook deps, Redeployed
+
+## Example 2
+Stream / Team: Software Engineering
+Service / Component: cart-api
+Root Cause: N+1 query problem when calculating cart totals for users with many items.
+What Worked: Refactored ORM call to use eager loading (.include()), Scaled DB vertically to survive peak
+What Failed: Adding caching at the API level (cache invalidation too complex)
+Lessons Learned: ORMs can easily hide inefficient database access patterns.
+Action Items / Prevention: Add query logging in dev environment, Use DataLoaders for GraphQL resolvers
+Resolution Steps: Added eager loading, Deployed hotfix
+
+## Example 3
+Stream / Team: Software Engineering
+Service / Component: notification-worker
+Root Cause: Memory leak caused by unclosed database connections inside a loop.
+What Worked: Added finally block to close connections, Increased worker replica count
+What Failed: Increasing heap size
+Lessons Learned: Resources must always be explicitly released in background workers.
+Action Items / Prevention: Use context managers (with statements) for all DB access, Add memory leak tests
+Resolution Steps: Fixed connection closure, Redeployed
+
+## Example 4
+Stream / Team: Software Engineering
+Service / Component: order-service
+Root Cause: Race condition in order state machine allowed double-processing of payments.
+What Worked: Added pessimistic locking to the order row during processing, Processed refunds
+What Failed: Relying on frontend disabling the submit button
+Lessons Learned: Distributed systems require database-level locking for critical state transitions.
+Action Items / Prevention: Implement SELECT FOR UPDATE on payment processing, Add idempotency keys to Stripe
+Resolution Steps: Added row locks, Refunded users
+
+## Example 5
+Stream / Team: Software Engineering
+Service / Component: mobile-app
+Root Cause: Uncaught exception in third-party analytics SDK crashed the app on startup for iOS 14 users.
+What Worked: Disabled the feature flag for the analytics SDK, Pushed OTA update
+What Failed: Waiting for Apple App Store expedited review
+Lessons Learned: Third-party SDKs must always be wrapped in try/catch and gated behind feature flags.
+Action Items / Prevention: Wrap SDK initialization, Expand automated testing to older OS versions
+Resolution Steps: Disabled flag, Released OTA
+
+## Example 6
+Stream / Team: Software Engineering
+Service / Component: user-profile-ui-v2
+Root Cause: React infinite re-render loop triggered by a missing dependency array in a useEffect hook.
+What Worked: Rolled back frontend deployment, Added empty dependency array to hook
+What Failed: Clearing browser cache
+Lessons Learned: useEffect hooks without dependency arrays will execute on every single render.
+Action Items / Prevention: Enable exhaustive-deps eslint rule, Add CI block on lint warnings
+Resolution Steps: Fixed hook deps, Redeployed
+
+## Example 7
+Stream / Team: Software Engineering
+Service / Component: cart-api-v2
+Root Cause: N+1 query problem when calculating cart totals for users with many items.
+What Worked: Refactored ORM call to use eager loading (.include()), Scaled DB vertically to survive peak
+What Failed: Adding caching at the API level (cache invalidation too complex)
+Lessons Learned: ORMs can easily hide inefficient database access patterns.
+Action Items / Prevention: Add query logging in dev environment, Use DataLoaders for GraphQL resolvers
+Resolution Steps: Added eager loading, Deployed hotfix
+
+## Example 8
+Stream / Team: Software Engineering
+Service / Component: notification-worker-v2
+Root Cause: Memory leak caused by unclosed database connections inside a loop.
+What Worked: Added finally block to close connections, Increased worker replica count
+What Failed: Increasing heap size
+Lessons Learned: Resources must always be explicitly released in background workers.
+Action Items / Prevention: Use context managers (with statements) for all DB access, Add memory leak tests
+Resolution Steps: Fixed connection closure, Redeployed
+
+## Example 9
+Stream / Team: Software Engineering
+Service / Component: order-service-v2
+Root Cause: Race condition in order state machine allowed double-processing of payments.
+What Worked: Added pessimistic locking to the order row during processing, Processed refunds
+What Failed: Relying on frontend disabling the submit button
+Lessons Learned: Distributed systems require database-level locking for critical state transitions.
+Action Items / Prevention: Implement SELECT FOR UPDATE on payment processing, Add idempotency keys to Stripe
+Resolution Steps: Added row locks, Refunded users
+
+## Example 10
+Stream / Team: Software Engineering
+Service / Component: mobile-app-v2
+Root Cause: Uncaught exception in third-party analytics SDK crashed the app on startup for iOS 14 users.
+What Worked: Disabled the feature flag for the analytics SDK, Pushed OTA update
+What Failed: Waiting for Apple App Store expedited review
+Lessons Learned: Third-party SDKs must always be wrapped in try/catch and gated behind feature flags.
+Action Items / Prevention: Wrap SDK initialization, Expand automated testing to older OS versions
+Resolution Steps: Disabled flag, Released OTA
+
+## Example 11
+Stream / Team: Software Engineering
+Service / Component: user-profile-ui-v3
+Root Cause: React infinite re-render loop triggered by a missing dependency array in a useEffect hook.
+What Worked: Rolled back frontend deployment, Added empty dependency array to hook
+What Failed: Clearing browser cache
+Lessons Learned: useEffect hooks without dependency arrays will execute on every single render.
+Action Items / Prevention: Enable exhaustive-deps eslint rule, Add CI block on lint warnings
+Resolution Steps: Fixed hook deps, Redeployed
+
+## Example 12
+Stream / Team: Software Engineering
+Service / Component: cart-api-v3
+Root Cause: N+1 query problem when calculating cart totals for users with many items.
+What Worked: Refactored ORM call to use eager loading (.include()), Scaled DB vertically to survive peak
+What Failed: Adding caching at the API level (cache invalidation too complex)
+Lessons Learned: ORMs can easily hide inefficient database access patterns.
+Action Items / Prevention: Add query logging in dev environment, Use DataLoaders for GraphQL resolvers
+Resolution Steps: Added eager loading, Deployed hotfix
+
+## Example 13
+Stream / Team: Software Engineering
+Service / Component: notification-worker-v3
+Root Cause: Memory leak caused by unclosed database connections inside a loop.
+What Worked: Added finally block to close connections, Increased worker replica count
+What Failed: Increasing heap size
+Lessons Learned: Resources must always be explicitly released in background workers.
+Action Items / Prevention: Use context managers (with statements) for all DB access, Add memory leak tests
+Resolution Steps: Fixed connection closure, Redeployed
+
+## Example 14
+Stream / Team: Software Engineering
+Service / Component: order-service-v3
+Root Cause: Race condition in order state machine allowed double-processing of payments.
+What Worked: Added pessimistic locking to the order row during processing, Processed refunds
+What Failed: Relying on frontend disabling the submit button
+Lessons Learned: Distributed systems require database-level locking for critical state transitions.
+Action Items / Prevention: Implement SELECT FOR UPDATE on payment processing, Add idempotency keys to Stripe
+Resolution Steps: Added row locks, Refunded users
+
+## Example 15
+Stream / Team: Software Engineering
+Service / Component: mobile-app-v3
+Root Cause: Uncaught exception in third-party analytics SDK crashed the app on startup for iOS 14 users.
+What Worked: Disabled the feature flag for the analytics SDK, Pushed OTA update
+What Failed: Waiting for Apple App Store expedited review
+Lessons Learned: Third-party SDKs must always be wrapped in try/catch and gated behind feature flags.
+Action Items / Prevention: Wrap SDK initialization, Expand automated testing to older OS versions
+Resolution Steps: Disabled flag, Released OTA
+
+## Example 16
+Stream / Team: Software Engineering
+Service / Component: user-profile-ui-v4
+Root Cause: React infinite re-render loop triggered by a missing dependency array in a useEffect hook.
+What Worked: Rolled back frontend deployment, Added empty dependency array to hook
+What Failed: Clearing browser cache
+Lessons Learned: useEffect hooks without dependency arrays will execute on every single render.
+Action Items / Prevention: Enable exhaustive-deps eslint rule, Add CI block on lint warnings
+Resolution Steps: Fixed hook deps, Redeployed
+
+## Example 17
+Stream / Team: Software Engineering
+Service / Component: cart-api-v4
+Root Cause: N+1 query problem when calculating cart totals for users with many items.
+What Worked: Refactored ORM call to use eager loading (.include()), Scaled DB vertically to survive peak
+What Failed: Adding caching at the API level (cache invalidation too complex)
+Lessons Learned: ORMs can easily hide inefficient database access patterns.
+Action Items / Prevention: Add query logging in dev environment, Use DataLoaders for GraphQL resolvers
+Resolution Steps: Added eager loading, Deployed hotfix
+
+## Example 18
+Stream / Team: Software Engineering
+Service / Component: notification-worker-v4
+Root Cause: Memory leak caused by unclosed database connections inside a loop.
+What Worked: Added finally block to close connections, Increased worker replica count
+What Failed: Increasing heap size
+Lessons Learned: Resources must always be explicitly released in background workers.
+Action Items / Prevention: Use context managers (with statements) for all DB access, Add memory leak tests
+Resolution Steps: Fixed connection closure, Redeployed
+
+## Example 19
+Stream / Team: Software Engineering
+Service / Component: order-service-v4
+Root Cause: Race condition in order state machine allowed double-processing of payments.
+What Worked: Added pessimistic locking to the order row during processing, Processed refunds
+What Failed: Relying on frontend disabling the submit button
+Lessons Learned: Distributed systems require database-level locking for critical state transitions.
+Action Items / Prevention: Implement SELECT FOR UPDATE on payment processing, Add idempotency keys to Stripe
+Resolution Steps: Added row locks, Refunded users
+
+## Example 20
+Stream / Team: Software Engineering
+Service / Component: mobile-app-v4
+Root Cause: Uncaught exception in third-party analytics SDK crashed the app on startup for iOS 14 users.
+What Worked: Disabled the feature flag for the analytics SDK, Pushed OTA update
+What Failed: Waiting for Apple App Store expedited review
+Lessons Learned: Third-party SDKs must always be wrapped in try/catch and gated behind feature flags.
+Action Items / Prevention: Wrap SDK initialization, Expand automated testing to older OS versions
+Resolution Steps: Disabled flag, Released OTA
+
+
+### Security STREAM EXAMPLES ###
+
+## Example 1
+Stream / Team: Security
+Service / Component: auth-gateway
+Root Cause: API rate limiting bypassed by an attacker rotating through thousands of proxy IP addresses.
+What Worked: Implemented device fingerprinting rate limits, Blocked known proxy ASNs
+What Failed: Standard IP-based rate limiting
+Lessons Learned: IP-based rate limiting is ineffective against distributed botnets.
+Action Items / Prevention: Deploy Cloudflare Bot Management, Require CAPTCHA for suspicious logins
+Resolution Steps: Updated WAF rules, Added CAPTCHA
+
+## Example 2
+Stream / Team: Security
+Service / Component: s3-storage
+Root Cause: Developer accidentally committed AWS access keys to a public GitHub repository.
+What Worked: Instantly revoked the compromised keys via IAM, Rotated all related credentials
+What Failed: Trying to scrub the git history
+Lessons Learned: Secrets will eventually be leaked if humans are allowed to handle them directly.
+Action Items / Prevention: Implement GitHub secret scanning, Move all deployments to IAM Roles/OIDC
+Resolution Steps: Revoked keys, Rotated secrets
+
+## Example 3
+Stream / Team: Security
+Service / Component: admin-panel
+Root Cause: Cross-Site Scripting (XSS) vulnerability in user feedback form allowed session hijacking.
+What Worked: Sanitized the input using DOMPurify, Invalidated all active admin sessions
+What Failed: Attempting to write custom regex filters
+Lessons Learned: Never trust user input, and never write custom HTML sanitization logic.
+Action Items / Prevention: Enforce strict Content Security Policy (CSP), Audit all raw HTML renders
+Resolution Steps: Sanitized input, Invalidated sessions
+
+## Example 4
+Stream / Team: Security
+Service / Component: legacy-api
+Root Cause: Unauthenticated endpoint exposed internal user PII due to missing middleware.
+What Worked: Applied emergency auth middleware to all legacy routes, Purged CDN cache
+What Failed: Checking access logs (too much volume)
+Lessons Learned: Authentication must be global and opt-out, rather than opt-in per route.
+Action Items / Prevention: Refactor router to apply global auth, Write automated unauthenticated access tests
+Resolution Steps: Secured endpoint, Purged cache
+
+## Example 5
+Stream / Team: Security
+Service / Component: ci-pipeline
+Root Cause: Supply chain attack via a compromised npm package dependency.
+What Worked: Pinned package to known safe version, Rebuilt and deployed application
+What Failed: Running npm audit (did not catch zero-day)
+Lessons Learned: Dependencies must be strictly pinned and audited for unexpected maintainer changes.
+Action Items / Prevention: Implement Dependabot security gates, Setup internal artifact registry
+Resolution Steps: Pinned version, Redeployed
+
+## Example 6
+Stream / Team: Security
+Service / Component: auth-gateway-v2
+Root Cause: API rate limiting bypassed by an attacker rotating through thousands of proxy IP addresses.
+What Worked: Implemented device fingerprinting rate limits, Blocked known proxy ASNs
+What Failed: Standard IP-based rate limiting
+Lessons Learned: IP-based rate limiting is ineffective against distributed botnets.
+Action Items / Prevention: Deploy Cloudflare Bot Management, Require CAPTCHA for suspicious logins
+Resolution Steps: Updated WAF rules, Added CAPTCHA
+
+## Example 7
+Stream / Team: Security
+Service / Component: s3-storage-v2
+Root Cause: Developer accidentally committed AWS access keys to a public GitHub repository.
+What Worked: Instantly revoked the compromised keys via IAM, Rotated all related credentials
+What Failed: Trying to scrub the git history
+Lessons Learned: Secrets will eventually be leaked if humans are allowed to handle them directly.
+Action Items / Prevention: Implement GitHub secret scanning, Move all deployments to IAM Roles/OIDC
+Resolution Steps: Revoked keys, Rotated secrets
+
+## Example 8
+Stream / Team: Security
+Service / Component: admin-panel-v2
+Root Cause: Cross-Site Scripting (XSS) vulnerability in user feedback form allowed session hijacking.
+What Worked: Sanitized the input using DOMPurify, Invalidated all active admin sessions
+What Failed: Attempting to write custom regex filters
+Lessons Learned: Never trust user input, and never write custom HTML sanitization logic.
+Action Items / Prevention: Enforce strict Content Security Policy (CSP), Audit all raw HTML renders
+Resolution Steps: Sanitized input, Invalidated sessions
+
+## Example 9
+Stream / Team: Security
+Service / Component: legacy-api-v2
+Root Cause: Unauthenticated endpoint exposed internal user PII due to missing middleware.
+What Worked: Applied emergency auth middleware to all legacy routes, Purged CDN cache
+What Failed: Checking access logs (too much volume)
+Lessons Learned: Authentication must be global and opt-out, rather than opt-in per route.
+Action Items / Prevention: Refactor router to apply global auth, Write automated unauthenticated access tests
+Resolution Steps: Secured endpoint, Purged cache
+
+## Example 10
+Stream / Team: Security
+Service / Component: ci-pipeline-v2
+Root Cause: Supply chain attack via a compromised npm package dependency.
+What Worked: Pinned package to known safe version, Rebuilt and deployed application
+What Failed: Running npm audit (did not catch zero-day)
+Lessons Learned: Dependencies must be strictly pinned and audited for unexpected maintainer changes.
+Action Items / Prevention: Implement Dependabot security gates, Setup internal artifact registry
+Resolution Steps: Pinned version, Redeployed
+
+## Example 11
+Stream / Team: Security
+Service / Component: auth-gateway-v3
+Root Cause: API rate limiting bypassed by an attacker rotating through thousands of proxy IP addresses.
+What Worked: Implemented device fingerprinting rate limits, Blocked known proxy ASNs
+What Failed: Standard IP-based rate limiting
+Lessons Learned: IP-based rate limiting is ineffective against distributed botnets.
+Action Items / Prevention: Deploy Cloudflare Bot Management, Require CAPTCHA for suspicious logins
+Resolution Steps: Updated WAF rules, Added CAPTCHA
+
+## Example 12
+Stream / Team: Security
+Service / Component: s3-storage-v3
+Root Cause: Developer accidentally committed AWS access keys to a public GitHub repository.
+What Worked: Instantly revoked the compromised keys via IAM, Rotated all related credentials
+What Failed: Trying to scrub the git history
+Lessons Learned: Secrets will eventually be leaked if humans are allowed to handle them directly.
+Action Items / Prevention: Implement GitHub secret scanning, Move all deployments to IAM Roles/OIDC
+Resolution Steps: Revoked keys, Rotated secrets
+
+## Example 13
+Stream / Team: Security
+Service / Component: admin-panel-v3
+Root Cause: Cross-Site Scripting (XSS) vulnerability in user feedback form allowed session hijacking.
+What Worked: Sanitized the input using DOMPurify, Invalidated all active admin sessions
+What Failed: Attempting to write custom regex filters
+Lessons Learned: Never trust user input, and never write custom HTML sanitization logic.
+Action Items / Prevention: Enforce strict Content Security Policy (CSP), Audit all raw HTML renders
+Resolution Steps: Sanitized input, Invalidated sessions
+
+## Example 14
+Stream / Team: Security
+Service / Component: legacy-api-v3
+Root Cause: Unauthenticated endpoint exposed internal user PII due to missing middleware.
+What Worked: Applied emergency auth middleware to all legacy routes, Purged CDN cache
+What Failed: Checking access logs (too much volume)
+Lessons Learned: Authentication must be global and opt-out, rather than opt-in per route.
+Action Items / Prevention: Refactor router to apply global auth, Write automated unauthenticated access tests
+Resolution Steps: Secured endpoint, Purged cache
+
+## Example 15
+Stream / Team: Security
+Service / Component: ci-pipeline-v3
+Root Cause: Supply chain attack via a compromised npm package dependency.
+What Worked: Pinned package to known safe version, Rebuilt and deployed application
+What Failed: Running npm audit (did not catch zero-day)
+Lessons Learned: Dependencies must be strictly pinned and audited for unexpected maintainer changes.
+Action Items / Prevention: Implement Dependabot security gates, Setup internal artifact registry
+Resolution Steps: Pinned version, Redeployed
+
+## Example 16
+Stream / Team: Security
+Service / Component: auth-gateway-v4
+Root Cause: API rate limiting bypassed by an attacker rotating through thousands of proxy IP addresses.
+What Worked: Implemented device fingerprinting rate limits, Blocked known proxy ASNs
+What Failed: Standard IP-based rate limiting
+Lessons Learned: IP-based rate limiting is ineffective against distributed botnets.
+Action Items / Prevention: Deploy Cloudflare Bot Management, Require CAPTCHA for suspicious logins
+Resolution Steps: Updated WAF rules, Added CAPTCHA
+
+## Example 17
+Stream / Team: Security
+Service / Component: s3-storage-v4
+Root Cause: Developer accidentally committed AWS access keys to a public GitHub repository.
+What Worked: Instantly revoked the compromised keys via IAM, Rotated all related credentials
+What Failed: Trying to scrub the git history
+Lessons Learned: Secrets will eventually be leaked if humans are allowed to handle them directly.
+Action Items / Prevention: Implement GitHub secret scanning, Move all deployments to IAM Roles/OIDC
+Resolution Steps: Revoked keys, Rotated secrets
+
+## Example 18
+Stream / Team: Security
+Service / Component: admin-panel-v4
+Root Cause: Cross-Site Scripting (XSS) vulnerability in user feedback form allowed session hijacking.
+What Worked: Sanitized the input using DOMPurify, Invalidated all active admin sessions
+What Failed: Attempting to write custom regex filters
+Lessons Learned: Never trust user input, and never write custom HTML sanitization logic.
+Action Items / Prevention: Enforce strict Content Security Policy (CSP), Audit all raw HTML renders
+Resolution Steps: Sanitized input, Invalidated sessions
+
+## Example 19
+Stream / Team: Security
+Service / Component: legacy-api-v4
+Root Cause: Unauthenticated endpoint exposed internal user PII due to missing middleware.
+What Worked: Applied emergency auth middleware to all legacy routes, Purged CDN cache
+What Failed: Checking access logs (too much volume)
+Lessons Learned: Authentication must be global and opt-out, rather than opt-in per route.
+Action Items / Prevention: Refactor router to apply global auth, Write automated unauthenticated access tests
+Resolution Steps: Secured endpoint, Purged cache
+
+## Example 20
+Stream / Team: Security
+Service / Component: ci-pipeline-v4
+Root Cause: Supply chain attack via a compromised npm package dependency.
+What Worked: Pinned package to known safe version, Rebuilt and deployed application
+What Failed: Running npm audit (did not catch zero-day)
+Lessons Learned: Dependencies must be strictly pinned and audited for unexpected maintainer changes.
+Action Items / Prevention: Implement Dependabot security gates, Setup internal artifact registry
+Resolution Steps: Pinned version, Redeployed

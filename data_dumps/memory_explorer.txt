@@ -1,0 +1,196 @@
+# Memory Explorer Queries
+
+Use these queries in the Memory Explorer search bar to test the AI's ability to recall and synthesize historical data.
+
+
+### SRE STREAM QUERIES ###
+
+1. Search for issue on the user-auth-service.
+2. I need info on with Stripe webhook timeouts.
+3. I need info on DNS resolution failure incident.
+4. Tell me about when with Stripe webhook timeouts.
+5. Why did worker-node-3 experience OOM kills last week?
+6. Can you explain how we handled lag exceeding 100k messages?
+7. Find runbooks for handle Elasticsearch query timeouts.
+8. Search for the inventory-db failed over.
+9. What is the standard response for 504 Gateway Timeouts at the load balancer?
+10. Can you explain how we handled OOM kills last week?
+11. What was the root cause of the payment-gateway outage during the last deployment?
+12. Search for OOM kills last week.
+13. Tell me about when issue on the user-auth-service.
+14. Can you explain how we handled the inventory-db failed over?
+15. Find runbooks for OOM kills last week.
+16. Search for handle Elasticsearch query timeouts.
+17. Find runbooks for utilization on the checkout-worker.
+18. I need info on utilization on the checkout-worker.
+19. What is the recommended runbook for dealing with Stripe webhook timeouts?
+20. Search for DNS resolution failure incident.
+21. What are the common causes of 502 Bad Gateway errors from Nginx?
+22. What did we learn from the DNS resolution failure incident?
+23. Tell me about when connection pool was exhausted..
+24. Search for during the last deployment.
+25. How did we resolve the BGP route flapping issue in the datacenter?
+26. Search for connection pool was exhausted..
+27. Show me past incidents where the Postgres connection pool was exhausted.
+28. Tell me about when OOM kills last week.
+29. Have we ever had Kafka consumer lag exceeding 100k messages?
+30. Can you explain how we handled Gateway errors from Nginx?
+31. Tell me about when at the load balancer.
+32. I need info on related to the search-indexer..
+33. How did we fix the Redis OOM issue on the user-auth-service?
+34. Find postmortems related to Kubernetes cluster autoscaler thrashing.
+35. What mitigation steps were used when the inventory-db failed over?
+36. Find runbooks for connection pool was exhausted..
+37. Search for related to the search-indexer..
+38. Tell me about when the inventory-db failed over.
+39. How do we handle Elasticsearch query timeouts?
+40. Tell me about when DNS resolution failure incident.
+41. Tell me about when Gateway errors from Nginx.
+42. Search for utilization on the checkout-worker.
+43. Show me all SEV-1 incidents related to the search-indexer.
+44. Are there any runbooks for handling high CPU utilization on the checkout-worker?
+45. Tell me about when related to the search-indexer..
+
+### DevOps STREAM QUERIES ###
+
+1. Can you explain how we handled by dangling docker images.?
+2. Search for due to disk watermarks.
+3. Search for manual kubectl patch incident.
+4. Can you explain how we handled is stuck in DynamoDB?
+5. Have we had incidents where Elasticsearch rejected bulk inserts due to disk watermarks?
+6. How do I clear disk space on GitHub Actions self-hosted runners?
+7. Show me the postmortem for the expired artifact registry token.
+8. Why did SonarQube crash with an OutOfMemoryError during CI?
+9. I need info on expired artifact registry token..
+10. I need info on Gateway ErrorPortAllocation in AWS.
+11. Find runbooks for to AWS network troubleshooting..
+12. How did we fix the Prometheus memory exhaustion loop?
+13. What causes NAT Gateway ErrorPortAllocation in AWS?
+14. How do we prevent Terraform from locking indefinitely on failure?
+15. Can you explain how we handled the HashiCorp Vault cluster?
+16. Find runbooks for aggregation buffers are full.
+17. Tell me about when aggregation buffers are full.
+18. What did we learn from the ArgoCD manual kubectl patch incident?
+19. Find runbooks for due to disk watermarks.
+20. Tell me about when due to disk watermarks.
+21. Find runbooks for the HashiCorp Vault cluster.
+22. Find runbooks for is stuck in DynamoDB.
+23. Why did ArgoCD show the core-services app as OutOfSync?
+24. What should I do if a Terraform state lock is stuck in DynamoDB?
+25. How to handle orphaned Spinnaker bake pipelines?
+26. Search for Gateway ErrorPortAllocation in AWS.
+27. Find runbooks for Gateway ErrorPortAllocation in AWS.
+28. I need info on Prometheus memory exhaustion loop.
+29. I need info on the HashiCorp Vault cluster.
+30. Search for aggregation buffers are full.
+31. Find incidents related to CI/CD pipeline failures caused by dangling docker images.
+32. Search for orphaned Spinnaker bake pipelines.
+33. Find runbooks for manual kubectl patch incident.
+34. Tell me about when Prometheus memory exhaustion loop.
+35. Tell me about when an OutOfMemoryError during CI.
+36. What is the runbook for when fluentd log aggregation buffers are full?
+37. I need info on is stuck in DynamoDB.
+38. I need info on due to disk watermarks.
+39. Tell me about when by dangling docker images..
+40. Tell me about when manual kubectl patch incident.
+41. I need info on to AWS network troubleshooting..
+42. Search for expired artifact registry token..
+43. Search for the HashiCorp Vault cluster.
+44. Show me all runbooks related to AWS network troubleshooting.
+45. How do we manually unseal the HashiCorp Vault cluster?
+
+### Software Engineering STREAM QUERIES ###
+
+1. Search for for synchronous ML checks.
+2. Can you explain how we handled payment processing race condition.?
+3. Search for files' in the chat-websocket.
+4. How was the memory leak in the notification background worker resolved?
+5. Tell me about when for synchronous ML checks.
+6. Search for notification background worker resolved.
+7. What caused the Chrome headless zombie processes on the pdf-generator?
+8. Find runbooks for processes on the pdf-generator.
+9. How did we fix the React infinite loop on the user profile page?
+10. Why did the mobile app crash on startup for iOS 14 users?
+11. Tell me about when files' in the chat-websocket.
+12. How do we handle NaN predictions from the ML recommendation engine?
+13. Can you explain how we handled timeouts in the fraud-detection-api?
+14. I need info on timeout in the cart-api.
+15. What was the root cause of the N+1 query timeout in the cart-api?
+16. Can you explain how we handled the ML recommendation engine?
+17. Tell me about when SDKs crashing the app.
+18. I need info on SDKs crashing the app.
+19. Search for loading in the ORM.
+20. I need info on for synchronous ML checks.
+21. What did we learn about using eager loading in the ORM?
+22. Tell me about when the user profile page.
+23. Tell me about when caused a C++ segfault..
+24. Can you explain how we handled dependency arrays in useEffect.?
+25. Show me past incidents involving missing dependency arrays in useEffect.
+26. Search for SDKs crashing the app.
+27. Find runbooks for payment processing race condition..
+28. Find incidents where user-uploaded images caused a C++ segfault.
+29. Can you explain how we handled for iOS 14 users?
+30. Find runbooks for timeout in the cart-api.
+31. Search for timeouts in the fraud-detection-api.
+32. Tell me about when for iOS 14 users.
+33. How do we prevent unclosed database connections in background workers?
+34. Find runbooks for notification background worker resolved.
+35. Tell me about when processes on the pdf-generator.
+36. Show me the postmortem for the double payment processing race condition.
+37. Can you explain how we handled loading in the ORM?
+38. Tell me about when payment processing race condition..
+39. How did we mitigate timeouts in the fraud-detection-api?
+40. What is the recommended fallback mechanism for synchronous ML checks?
+41. Have we had issues with third-party analytics SDKs crashing the app?
+42. Find runbooks for loading in the ORM.
+43. What is the runbook for handling 'Too many open files' in the chat-websocket?
+44. I need info on notification background worker resolved.
+45. Find runbooks for files' in the chat-websocket.
+
+### Security STREAM QUERIES ###
+
+1. Tell me about when for the IAM authenticator.
+2. Find incidents where the vulnerability scanner was blocked by the service mesh.
+3. Find runbooks for errors from the WAF.
+4. Tell me about when Dependabot missing zero-day vulnerabilities.
+5. Find runbooks for PII on legacy endpoints.
+6. Tell me about when attack on the auth-gateway.
+7. I need info on Dependabot missing zero-day vulnerabilities.
+8. Find runbooks for npm supply chain attack.
+9. How did we stop the credential stuffing attack on the auth-gateway?
+10. How do we prevent unauthenticated access to PII on legacy endpoints?
+11. Can you explain how we handled on the legacy-api fixed?
+12. Find runbooks for in the admin panel..
+13. I need info on access keys to GitHub.
+14. What was the root cause of the public S3 bucket exposure alert?
+15. Tell me about when cause false positive blocking.
+16. Can you explain how we handled access keys to GitHub?
+17. How do we handle an expired SAML assertion for the IAM authenticator?
+18. I need info on cause false positive blocking.
+19. Tell me about when by the service mesh..
+20. Tell me about when S3 bucket exposure alert.
+21. Search for in the admin panel..
+22. Find runbooks for for the IAM authenticator.
+23. I need info on for the IAM authenticator.
+24. How was the broken access control issue on the legacy-api fixed?
+25. Search for access keys to GitHub.
+26. Show me past incidents involving IP-based rate limiting bypasses.
+27. Can you explain how we handled in the admin panel.?
+28. Can you explain how we handled errors from the WAF?
+29. Find runbooks for Dependabot missing zero-day vulnerabilities.
+30. Search for for the IAM authenticator.
+31. I need info on error on the audit-logger.
+32. Tell me about when in the admin panel..
+33. What is the standard response for sudden spikes in 403 Forbidden errors from the WAF?
+34. What is the runbook for responding to SSH brute force attacks on the bastion host?
+35. Show me the postmortem for the reflected XSS vulnerability in the admin panel.
+36. Have we had issues with Dependabot missing zero-day vulnerabilities?
+37. I need info on IP-based rate limiting bypasses..
+38. Search for cause false positive blocking.
+39. Can you explain how we handled PII on legacy endpoints?
+40. Find runbooks for by the service mesh..
+41. Find runbooks for on the bastion host.
+42. What mitigation steps were used during the npm supply chain attack?
+43. Why did the new WAF rule cause false positive blocking?
+44. What did we learn from the accidental commit of AWS access keys to GitHub?
+45. How did we resolve the write capacity exceeded error on the audit-logger?

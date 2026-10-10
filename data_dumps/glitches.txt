@@ -1,0 +1,10 @@
+1st Glitch in Project: Hindsight Cloud Async Context Mismatch
+
+Symptom:
+When submitting an investigation request on the Active Incident page, the UI reported "No historical memory available" and "No historical evidence available to match this incident", despite the synthetic data having just been successfully ingested into Hindsight Cloud.
+
+Root Cause:
+The backend FastAPI server was trying to call the asynchronous Hindsight Cloud SDK (which uses `aiohttp` under the hood) from inside a synchronous worker thread. Because FastAPI automatically runs synchronous `def` route functions in an external threadpool, Python's `asyncio` could not find the active event loop, resulting in a `Timeout context manager should be used inside a task` error.
+
+Fix:
+Converted the relevant backend routes in `server.py` (e.g., `def investigate`) into asynchronous endpoints (`async def investigate`). This forced FastAPI to run the Hindsight Cloud requests in the main event loop, providing the proper execution context for the SDK.

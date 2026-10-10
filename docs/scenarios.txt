@@ -1,0 +1,1002 @@
+# INCIDENT MEMORY COPILOT - TEST SCENARIOS FOR DEMO
+
+Use these exact test inputs during your Hackathon presentation to show off the power of the Retrieval-Augmented Generation (RAG) system. These inputs perfectly match the synthetic data ingested into the Hindsight Cloud database.
+
+---
+
+=========================================================================
+1. WITH HISTORICAL INCIDENTS (Data is already in Hindsight Cloud)
+=========================================================================
+
+=========================================================================
+1. WITH HISTORICAL INCIDENTS (Data is already in Hindsight Cloud)
+=========================================================================
+
+### Test Scenario 1: The "Redis Cache" Outage
+*Proves the AI remembers that restarting Redis is a bad idea due to cold cache spikes.*
+
+**INPUTS:**
+*   Service: `redis-cache`
+*   Severity: `SEV-1`
+*   Error / Symptom: `Cache full, elevated latency, and session drops`
+*   Recent Deployment: `(leave blank)`
+*   Deployment Time: `(leave blank)`
+*   Description: `Users are getting logged out. The Redis cache is completely full and dropping connections. Should we just restart the Redis instances?`
+
+**EXPECTED OUTPUT:**
+The AI will warn you **NOT** to restart the instances because the historical memory shows: "Restarting application instances caused massive DB spike due to cold cache". Instead, it will recommend: "Remove stale cache patterns manually and patch code to enforce TTL."
+
+---
+
+---
+
+---
+
+### Test Scenario 2: The "Kubernetes OOM" Crash
+*Proves the AI remembers not to blindly scale up pods when they are crashing due to memory limits.*
+
+**INPUTS:**
+*   Service: `kubernetes-cluster`
+*   Severity: `SEV-2`
+*   Error / Symptom: `Pods stuck in CrashLoopBackOff`
+*   Recent Deployment: `checkout-worker-v2`
+*   Deployment Time: `15 minutes ago`
+*   Description: `Our pods are constantly crashing with OOMKilled errors. Should we just scale up the replica count to handle the load?`
+
+**EXPECTED OUTPUT:**
+The AI will pull the historical memory showing the Root Cause was "Incorrect container resource limits causing OOM termination". It will warn you that scaling up the replica count failed in the past. It will recommend: "Increase memory limits."
+
+---
+
+---
+
+---
+
+### Test Scenario 3: The "Payment API" Regression
+*Proves the AI can identify a deployment regression and stop engineers from uselessly restarting the gateway.*
+
+**INPUTS:**
+*   Service: `payment-api`
+*   Severity: `SEV-1`
+*   Error / Symptom: `HTTP 502 Bad Gateway`
+*   Recent Deployment: `payment-api-v3`
+*   Deployment Time: `5 minutes ago`
+*   Description: `Getting massive 502 errors right after our latest deployment. It seems the API gateway is failing. Should we restart the API gateway?`
+
+**EXPECTED OUTPUT:**
+The AI will explain that the Root Cause is "Database connection pool exhaustion due to reduced limits in Helm chart." It will warn you that restarting the API gateway repeatedly failed in the past. It will recommend: "Rollback deployment and restore DB connection pool limits."
+
+---
+
+---
+
+---
+
+### Test Scenario 4: WITH HISTORICAL MEMORY (RAG + Gemini)
+*Demonstrates the full RAG pipeline — Hindsight retrieves past incidents, Gemini uses them as context to generate evidence-backed recommendations.*
+
+**FLOW: Incident Submitted → Hindsight finds similar past incidents → Gemini uses RAG context → Investigation Report**
+
+**INPUTS:**
+*   Service: `payment-api`
+*   Severity: `SEV-1`
+*   Error / Symptom: `HTTP 502 Bad Gateway`
+*   Error Rate: `38%`
+*   Recent Deployment: `payment-service-v2.9.0`
+*   Deployment Time: `12 minutes ago`
+*   DB Utilization: `91%`
+*   Description: `Payment API is throwing HTTP 502 errors affecting 38% of transactions. The deployment happened 12 minutes ago and database utilization has spiked to 91%. Engineers suspect either the gateway or the database is the bottleneck.`
+
+**EXPECTED OUTPUT (Gemini with RAG):**
+- **Historical Memory section** will show past INC-XXXX incidents with the same service and symptom pattern.
+- **Lessons Learned** will show postmortems identifying the root cause as: "Database connection pool exhaustion due to reduced limits in Helm chart."
+- **Gemini's Recommendation** will be a dynamic, evidence-backed AI response: recommending rollback and DB pool inspection — informed by REAL historical evidence retrieved from Hindsight.
+- Gemini will cite WHY it suggests each step based on what previously worked or failed.
+
+---
+
+---
+
+---
+
+### Test Scenario 22: Historical Payment API Connection Pool
+*Proves RAG pulls exact historical connection pool exhaustion from payment-api.*
+
+**INPUTS:**
+*   Service: payment-api
+*   Severity: SEV-1
+*   Error / Symptom: HTTP 502 errors
+*   Error Rate: 75%
+*   Recent Deployment: payment-api-v3
+*   Deployment Time: 10 minutes ago
+*   DB Utilization: High
+*   Description: Payment API returning HTTP 502 errors after deployment.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Successful Actions**: Rolled back deployment, Restored DB connection pool limits, Restarted affected workers.
+- **Failed Actions**: Restarting API gateway repeatedly, Scaling up pods.
+- **Recommendation**: The AI will explicitly advise against scaling up pods or restarting the gateway based on past failures, and will recommend checking the Helm chart for reduced connection pool limits.
+
+---
+
+---
+
+---
+
+### Test Scenario 23: Historical Kubernetes OOM
+*Proves RAG pulls exact OOMKilled limits issue from kubernetes-cluster.*
+
+**INPUTS:**
+*   Service: kubernetes-cluster
+*   Severity: SEV-2
+*   Error / Symptom: CrashLoopBackOff
+*   Error Rate: N/A
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Pods stuck in CrashLoopBackOff due to OOMKilled.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Successful Actions**: Increased memory limits, Redeployed pod.
+- **Failed Actions**: Scaling up replica count.
+- **Recommendation**: The AI will explicitly advise NOT to scale up the replica count (as it just creates more OOM pods) and instead fix the container resource limits.
+
+---
+
+---
+
+---
+
+### Test Scenario 24: Historical Redis Cache Unbounded Growth
+*Proves RAG pulls exact unbounded cache growth issue from redis-cache.*
+
+**INPUTS:**
+*   Service: 
+edis-cache
+*   Severity: SEV-1
+*   Error / Symptom: Latency spikes
+*   Error Rate: 30%
+*   Recent Deployment: 
+ew-cache-endpoint
+*   Deployment Time: 1 hour ago
+*   DB Utilization: Normal
+*   Description: Redis cache full causing elevated latency and session drops.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Successful Actions**: Removed stale cache patterns manually, Patched code to enforce TTL.
+- **Failed Actions**: Restarting application instances.
+- **Recommendation**: The AI will strictly warn against restarting the application instances (as it causes massive DB spikes) and will tell you to enforce TTLs.
+
+---
+
+---
+
+---
+
+### Test Scenario 25: Historical User Auth Network Partition
+*Proves RAG pulls transient network partition issue for general services.*
+
+**INPUTS:**
+*   Service: user-auth-service
+*   Severity: SEV-2
+*   Error / Symptom: Latency spikes over 2000ms
+*   Error Rate: 15%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Elevated error rates and latency on user-auth-service.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Successful Actions**: Restarted service connections, Failed over to secondary region.
+- **Failed Actions**: Investigating application code.
+- **Recommendation**: The AI will state this is likely a transient cross-AZ network partition, advise against wasting time debugging app code, and recommend failing over to a secondary region.
+
+---
+
+---
+
+---
+
+### Test Scenario 26: Historical Inventory DB Partition
+*Another variation of the general network partition.*
+
+**INPUTS:**
+*   Service: inventory-db
+*   Severity: SEV-1
+*   Error / Symptom: Connection timeouts
+*   Error Rate: 60%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Low
+*   Description: Elevated error rates and latency on inventory-db.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Successful Actions**: Restarted service connections, Failed over to secondary region.
+- **Recommendation**: The AI will identify a transient network partition and suggest cross-AZ failover based on past incidents.
+
+---
+
+---
+
+---
+
+### Test Scenario 27: Historical Search Indexer Failover
+**INPUTS:**
+*   Service: search-indexer
+*   Severity: SEV-3
+*   Error / Symptom: HTTP 500 errors
+*   Error Rate: 20%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Elevated error rates and latency on search-indexer.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Recommendation**: Will pull historical postmortems indicating cross-AZ partition and recommend failing over rather than debugging code.
+
+---
+
+---
+
+---
+
+### Test Scenario 28: Historical Checkout Worker Network Issue
+**INPUTS:**
+*   Service: checkout-worker
+*   Severity: SEV-2
+*   Error / Symptom: High latency
+*   Error Rate: 45%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Elevated error rates and latency on checkout-worker.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Recommendation**: Matches the transient network partition pattern. Advises failover to secondary region.
+
+---
+
+---
+
+---
+
+### Test Scenario 29: Historical Notification Gateway Network Issue
+**INPUTS:**
+*   Service: 
+otification-gateway
+*   Severity: SEV-2
+*   Error / Symptom: HTTP 502 errors
+*   Error Rate: 35%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Elevated error rates and latency on notification-gateway.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Recommendation**: Matches the transient network partition pattern. Advises failover to secondary region.
+
+---
+
+---
+
+---
+
+### Test Scenario 30: Payment API Deployment Regression (Variation 2)
+**INPUTS:**
+*   Service: payment-api
+*   Severity: SEV-1
+*   Error / Symptom: Database connection timeouts
+*   Error Rate: 50%
+*   Recent Deployment: payment-api-v4
+*   Deployment Time: 5 minutes ago
+*   DB Utilization: Normal
+*   Description: Payment API returning HTTP 502 errors after deployment.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Recommendation**: Exact match to connection pool exhaustion root cause. Recommends rolling back and checking Helm limits.
+
+---
+
+---
+
+---
+
+### Test Scenario 31: Kubernetes Cluster Memory Exhaustion (Variation 2)
+**INPUTS:**
+*   Service: kubernetes-cluster
+*   Severity: SEV-2
+*   Error / Symptom: OOMKilled
+*   Error Rate: N/A
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Pods stuck in CrashLoopBackOff due to OOMKilled.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Recommendation**: Exact match to incorrect container resource limits. Advises against scaling replicas.
+
+---
+
+---
+
+---
+
+### Test Scenario 32: Redis Cache Memory Saturation (Variation 2)
+**INPUTS:**
+*   Service: 
+edis-cache
+*   Severity: SEV-1
+*   Error / Symptom: Memory saturated
+*   Error Rate: 10%
+*   Recent Deployment: 
+ew-cache-endpoint
+*   Deployment Time: 2 hours ago
+*   DB Utilization: Normal
+*   Description: Redis cache full causing elevated latency and session drops.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Recommendation**: Exact match to unbounded cache without TTL. Advises against application restarts.
+
+---
+
+---
+
+---
+
+### Test Scenario 33: User Auth AZ Partition (Variation 2)
+**INPUTS:**
+*   Service: user-auth-service
+*   Severity: SEV-2
+*   Error / Symptom: Pod restarts
+*   Error Rate: 15%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Elevated error rates and latency on user-auth-service.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Recommendation**: Network partition. Restart service connections or failover.
+
+---
+
+---
+
+---
+
+### Test Scenario 34: Inventory DB AZ Partition (Variation 2)
+**INPUTS:**
+*   Service: inventory-db
+*   Severity: SEV-2
+*   Error / Symptom: High latency
+*   Error Rate: 40%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: High
+*   Description: Elevated error rates and latency on inventory-db.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Recommendation**: Network partition. Restart service connections or failover.
+
+---
+
+---
+
+---
+
+### Test Scenario 35: Search Indexer AZ Partition (Variation 2)
+**INPUTS:**
+*   Service: search-indexer
+*   Severity: SEV-3
+*   Error / Symptom: Connection timeouts
+*   Error Rate: 30%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Elevated error rates and latency on search-indexer.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Recommendation**: Network partition. Restart service connections or failover.
+
+---
+
+---
+
+---
+
+### Test Scenario 36: Checkout Worker AZ Partition (Variation 2)
+**INPUTS:**
+*   Service: checkout-worker
+*   Severity: SEV-1
+*   Error / Symptom: HTTP 500 errors
+*   Error Rate: 90%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Low
+*   Description: Elevated error rates and latency on checkout-worker.
+
+**EXPECTED OUTPUT (RAG + LLM):**
+- **Recommendation**: Network partition. Restart service connections or failover.
+
+---
+
+=========================================================================
+2. AI NEW INCIDENT SCENARIOS (No historical incidents - AI Recommendations)
+=========================================================================
+
+---
+
+=========================================================================
+2. AI NEW INCIDENT SCENARIOS (No historical incidents - AI Recommendations)
+=========================================================================
+
+### Test Scenario 5: NO HISTORICAL MEMORY (Pure Gemini / New Incident)
+*Demonstrates Gemini working purely on its own intelligence when NO similar past incidents exist in the memory bank.*
+
+**FLOW: Incident Submitted → Hindsight finds NO similar incidents → Gemini uses its own knowledge → Investigation Report**
+
+**INPUTS:**
+*   Service: `ml-inference-engine`
+*   Severity: `SEV-1`
+*   Error / Symptom: `CUDA out of memory error`
+*   Error Rate: `100%`
+*   Recent Deployment: `ml-engine-v4.2.0`
+*   Deployment Time: `3 minutes ago`
+*   DB Utilization: `N/A`
+*   Description: `Our ML inference engine is completely down. Every prediction request is failing with CUDA out of memory errors immediately after the latest model deployment. The new model is significantly larger than the previous one. GPU utilization shows 100% memory usage.`
+
+**EXPECTED OUTPUT (Pure Gemini - No RAG):**
+- **Historical Memory section** will show: "No similar incidents found."
+- **Lessons Learned** will show: "No items found."
+- **Gemini's Recommendation** will be generated entirely from Gemini's own expert knowledge (or the fallback engine if the API is overloaded), WITHOUT any historical context from Hindsight. It will recommend standard ML GPU troubleshooting.
+
+---
+
+---
+
+---
+
+### Test Scenario 6: The "Kafka Consumer Lag" Alert (LIVE API TEST)
+*Proves the newly added live Gemini API Key is working correctly by generating a custom response for a completely unprogrammed service.*
+
+**INPUTS:**
+*   Service: `notification-worker`
+*   Severity: `SEV-2`
+*   Error / Symptom: `High Kafka Consumer Lag`
+*   Error Rate: `N/A`
+*   Recent Deployment: `notification-service-v3.1`
+*   Deployment Time: `45 minutes ago`
+*   DB Utilization: `Normal`
+*   Description: `Alerts triggered for high consumer lag on the 'email-notifications' Kafka topic. Lag has increased from 100 messages to over 50,000 in the last 45 minutes. Consumers seem to be processing messages very slowly.`
+
+**EXPECTED OUTPUT (Live Gemini API):**
+- Because there is no historical memory for this, and NO deterministic fallback programmed for Kafka, the ONLY way you will get a detailed, formatted response is if the Gemini API key is successfully working!
+- Gemini will use its SRE knowledge to recommend checking consumer group status, investigating worker thread deadlocks from the recent deployment, or scaling up consumer pods.
+\n
+
+---
+
+---
+
+### Test Scenario 7: Database Deadlocks
+*Proves the LLM can identify DB locking issues.*
+
+**INPUTS:**
+*   Service: inventory-db
+*   Severity: SEV-2
+*   Error / Symptom: Transaction Deadlocks
+*   Error Rate: 15%
+*   Recent Deployment: inventory-sync-job
+*   Deployment Time: 1 hour ago
+*   DB Utilization: High
+*   Description: Multiple inventory update transactions are timing out and deadlocking since the new sync job started.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend checking the database for long-running transactions, killing blocked queries, and reviewing the isolation level of the new sync job.
+
+---
+
+---
+
+---
+
+### Test Scenario 8: OOMKilled Pods
+*Proves the LLM understands Kubernetes memory limits.*
+
+**INPUTS:**
+*   Service: image-processor
+*   Severity: SEV-2
+*   Error / Symptom: OOMKilled
+*   Error Rate: 100% of batch jobs
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Kubernetes is repeatedly killing the image-processor pods due to Out Of Memory (OOM).
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend increasing memory requests/limits for the pods, checking for memory leaks, or reducing the batch size of image processing.
+
+---
+
+---
+
+---
+
+### Test Scenario 9: API Gateway 502 Bad Gateway
+*Proves the LLM can troubleshoot ingress issues.*
+
+**INPUTS:**
+*   Service: pi-gateway
+*   Severity: SEV-1
+*   Error / Symptom: 502 Bad Gateway
+*   Error Rate: 30%
+*   Recent Deployment: gateway-config-update
+*   Deployment Time: 10 minutes ago
+*   DB Utilization: Normal
+*   Description: Users are reporting 502 errors when accessing the main API. Backend services seem healthy.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend rolling back the recent gateway configuration update and verifying the routing rules and backend health checks.
+
+---
+
+---
+
+---
+
+### Test Scenario 10: DNS Resolution Failure
+*Proves the LLM knows how to handle network DNS issues.*
+
+**INPUTS:**
+*   Service: uth-service
+*   Severity: SEV-1
+*   Error / Symptom: UnknownHostException
+*   Error Rate: 100%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: The auth service cannot resolve the hostname for the external identity provider (IdP).
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend checking the cluster's CoreDNS pods, verifying network policies, and testing resolution from within the pod using nslookup/dig.
+
+---
+
+---
+
+---
+
+### Test Scenario 11: Disk Full
+*Proves the LLM can identify storage exhaustion.*
+
+**INPUTS:**
+*   Service: logging-agent
+*   Severity: SEV-2
+*   Error / Symptom: No space left on device
+*   Error Rate: 100%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: The logging agent has stopped forwarding logs and reports no space left on the persistent volume.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend clearing old log files, expanding the persistent volume claim (PVC), and implementing log rotation.
+
+---
+
+---
+
+---
+
+### Test Scenario 12: High Latency on External API
+*Proves the LLM can deal with third-party dependencies.*
+
+**INPUTS:**
+*   Service: payment-gateway
+*   Severity: SEV-2
+*   Error / Symptom: Connection Timeout
+*   Error Rate: 20%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Calls to Stripe API are timing out after 30 seconds, causing checkout failures.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend checking Stripe's status page, implementing a circuit breaker, and ensuring retry logic has exponential backoff.
+
+---
+
+---
+
+---
+
+### Test Scenario 13: RabbitMQ Queue Full
+*Proves the LLM can troubleshoot message broker limits.*
+
+**INPUTS:**
+*   Service: order-queue
+*   Severity: SEV-2
+*   Error / Symptom: Queue at capacity limit
+*   Error Rate: N/A
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: The pending orders queue has hit its max depth limit, and new orders are being dropped.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend scaling up consumer workers, checking for stuck consumers, and temporarily increasing the queue limit if memory allows.
+
+---
+
+---
+
+---
+
+### Test Scenario 14: Connection Pool Exhaustion
+*Proves the LLM can handle resource pool limits.*
+
+**INPUTS:**
+*   Service: user-service
+*   Severity: SEV-2
+*   Error / Symptom: Timeout waiting for connection from pool
+*   Error Rate: 12%
+*   Recent Deployment: user-service-v2
+*   Deployment Time: 2 hours ago
+*   DB Utilization: Normal
+*   Description: The user service is throwing connection pool timeout errors when trying to read from the Postgres database.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend checking if the recent deployment reduced the pool size, looking for unclosed database connections in the code, or increasing the max pool size.
+
+---
+
+---
+
+---
+
+### Test Scenario 15: SSL Certificate Expired
+*Proves the LLM can troubleshoot TLS issues.*
+
+**INPUTS:**
+*   Service: rontend-proxy
+*   Severity: SEV-1
+*   Error / Symptom: CERT_DATE_INVALID
+*   Error Rate: 100%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: All users are seeing a security warning in their browsers; the site cannot be accessed securely.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend checking the cert-manager logs, manually renewing the SSL certificate via Let's Encrypt, and deploying the new certificate to the ingress.
+
+---
+
+---
+
+---
+
+### Test Scenario 16: S3 Bucket Access Denied
+*Proves the LLM understands cloud IAM permissions.*
+
+**INPUTS:**
+*   Service: sset-service
+*   Severity: SEV-2
+*   Error / Symptom: 403 Access Denied
+*   Error Rate: 100%
+*   Recent Deployment: iam-policy-update
+*   Deployment Time: 5 minutes ago
+*   DB Utilization: Normal
+*   Description: The asset service can no longer upload images to the S3 bucket, returning 403 errors.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend rolling back the recent IAM policy update and verifying the IAM role assigned to the asset-service pod.
+
+---
+
+---
+
+---
+
+### Test Scenario 17: ElasticSearch High Heap Usage
+*Proves the LLM can troubleshoot JVM apps.*
+
+**INPUTS:**
+*   Service: search-service
+*   Severity: SEV-2
+*   Error / Symptom: CircuitBreakingException
+*   Error Rate: 25%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Elasticsearch is rejecting queries with CircuitBreakingException because heap usage is at 98%.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend temporarily stopping heavy index operations, scaling up the ES cluster, or increasing the JVM heap size if host memory permits.
+
+---
+
+---
+
+---
+
+### Test Scenario 18: Kubernetes Node NotReady
+*Proves the LLM understands cluster-level failures.*
+
+**INPUTS:**
+*   Service: kubelet
+*   Severity: SEV-1
+*   Error / Symptom: NodeStatusUnknown
+*   Error Rate: N/A
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: Three worker nodes have transitioned to a NotReady state, causing pod evictions.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend checking the node's system logs (journalctl) for kubelet crashes, checking for network partitioning, or verifying node resource exhaustion (CPU/Memory).
+
+---
+
+---
+
+---
+
+### Test Scenario 19: MongoDB Slow Queries
+*Proves the LLM can troubleshoot NoSQL databases.*
+
+**INPUTS:**
+*   Service: product-catalog
+*   Severity: SEV-3
+*   Error / Symptom: Query execution time > 5000ms
+*   Error Rate: 5%
+*   Recent Deployment: catalog-api-v4
+*   Deployment Time: 3 hours ago
+*   DB Utilization: Normal
+*   Description: Certain product category lookups are taking over 5 seconds to complete in MongoDB.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend running explain() on the slow queries, adding missing indexes for the new queries introduced in v4, and checking the MongoDB profiler.
+
+---
+
+---
+
+---
+
+### Test Scenario 20: Too Many Open Files
+*Proves the LLM can identify OS-level limits.*
+
+**INPUTS:**
+*   Service: websocket-server
+*   Severity: SEV-2
+*   Error / Symptom: Too many open files
+*   Error Rate: 40%
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: The websocket server is failing to accept new connections due to EMFILE (too many open files) errors.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend checking for socket leaks in the application, and increasing the OS ulimit / file descriptor limit (fs.file-max) for the container.
+
+---
+
+---
+
+---
+
+### Test Scenario 21: CPU Throttling
+*Proves the LLM understands container CPU limits.*
+
+**INPUTS:**
+*   Service: data-pipeline
+*   Severity: SEV-2
+*   Error / Symptom: High CPU Throttling
+*   Error Rate: N/A
+*   Recent Deployment: None
+*   Deployment Time: N/A
+*   DB Utilization: Normal
+*   Description: The data pipeline tasks are taking 3x longer to complete, and metrics show heavy CPU throttling despite overall node CPU being low.
+
+**EXPECTED OUTPUT (Live LLM API):**
+- The AI will recommend checking the CPU limits (CFS quota) on the pod, and either raising the limit or removing it to allow bursting.
+\n
+
+---
+
+---
+
+
+
+=========================================================================
+3. ORGANIZATIONAL MEMORY QUERIES (Demo for RECALL and REFLECT Tokens)
+=========================================================================
+Copy and paste these queries into the 'Organizational Memory' search box. 
+Click 'RECALL' to retrieve documents, or 'REFLECT' to generate high-level insights.
+
+1. Have we seen Payment API 502 errors before?
+2. What happens when Kubernetes pods get stuck in CrashLoopBackOff?
+3. Show me postmortems related to Redis latency spikes.
+4. What was the root cause of the last checkout-worker failure?
+5. Why did the search-indexer experience connection timeouts?
+6. How did we resolve the previous inventory-db latency issues?
+7. Are there any historical incidents involving the notification-gateway?
+8. What is our standard practice for handling unbounded cache growth?
+9. Show me incidents caused by cross-AZ transient network partitions.
+10. Did scaling up the replica count work during the last OOM event?
+11. Give me a summary of connection pool exhaustion incidents.
+12. How do we normally handle high database utilization spikes?
+13. What were the failed actions during the last Redis cache outage?
+14. Have we ever seen HTTP 500 errors on the checkout-worker before?
+15. What lessons have we learned about Helm chart resource limits?
+16. How do we troubleshoot Kafka consumer lag?
+17. What are the common root causes for Kubernetes memory exhaustion?
+18. Have we seen pod restarts in the user-auth-service recently?
+19. Show me the postmortem for our last SEV-1 database outage.
+20. What is the recommended fix for Redis instances missing a TTL?
+
+
+=========================================================================
+4. LEARN / POSTMORTEM EXAMPLES (Demo for RETAIN Tokens)
+=========================================================================
+Copy and paste these fields into the 'Learn / Postmortem' form to create new memories and trigger RETAIN tokens.
+
+### Example 1: DNS Resolution Failure
+*   Incident ID: INC-1100
+*   Service: api-gateway
+*   Root Cause: CoreDNS pods were evicted due to node pressure.
+*   What Worked: Scaled up CoreDNS replicas and added anti-affinity rules.
+*   What Failed: Flushing local DNS caches on client machines.
+*   Lesson Learned: Always configure pod anti-affinity for critical cluster services like CoreDNS.
+
+### Example 2: API Rate Limiting Bypass
+*   Incident ID: INC-1101
+*   Service: user-auth-service
+*   Root Cause: Rate limiting middleware was accidentally disabled in the v2.1.0 release.
+*   What Worked: Emergency rollback to v2.0.9.
+*   What Failed: Trying to block offending IPs manually via WAF.
+*   Lesson Learned: Ensure rate limiting config is covered by integration tests before auth deployments.
+
+### Example 3: Elasticsearch Heap Exhaustion
+*   Incident ID: INC-1102
+*   Service: search-indexer
+*   Root Cause: A malformed regex query caused a massive GC pause and heap exhaustion.
+*   What Worked: Restarted data nodes and implemented query complexity limits.
+*   What Failed: Adding more JVM heap space (just delayed the crash).
+*   Lesson Learned: Never allow unbounded regex queries from the frontend without complexity validation.
+
+### Example 4: S3 Bucket Permissions
+*   Incident ID: INC-1103
+*   Service: asset-service
+*   Root Cause: Terraform apply accidentally removed the 's3:GetObject' permission from the IAM role.
+*   What Worked: Reverted the Terraform state and re-applied correct IAM policies.
+*   What Failed: Restarting the asset service pods.
+*   Lesson Learned: Enforce Terraform plan reviews for all IAM role changes.
+
+### Example 5: Expired TLS Certificate
+*   Incident ID: INC-1104
+*   Service: payment-api
+*   Root Cause: Cert-manager failed to automatically renew the Let's Encrypt certificate due to a DNS challenge failure.
+*   What Worked: Manually forced cert-manager renewal using HTTP01 challenge.
+*   What Failed: Waiting for the automated retry loop.
+*   Lesson Learned: Set up explicit alerting for certificate expiration at the 14-day mark, independent of cert-manager logs.
+
+### Example 6: RabbitMQ Message Blackhole
+*   Incident ID: INC-1105
+*   Service: notification-worker
+*   Root Cause: A consumer queue was accidentally bound with a typo in the routing key.
+*   What Worked: Re-bound the queue with the correct routing key and replayed DLQ messages.
+*   What Failed: Scaling up notification workers.
+*   Lesson Learned: Automate RabbitMQ topology provisioning instead of relying on manual admin UI changes.
+
+### Example 7: MongoDB Index Missing
+*   Incident ID: INC-1106
+*   Service: inventory-db
+*   Root Cause: A new query was introduced in checkout-worker without a corresponding MongoDB index.
+*   What Worked: Created a background index on the 'product_id' field.
+*   What Failed: Increasing the connection pool size.
+*   Lesson Learned: All new database queries must have their execution plans reviewed in staging.
+
+### Example 8: Cloudflare WAF Block
+*   Incident ID: INC-1107
+*   Service: api-gateway
+*   Root Cause: A new WAF managed rule blocked legitimate API traffic containing the word 'select' in the payload.
+*   What Worked: Added a WAF bypass rule for the specific API route.
+*   What Failed: Investigating application logs (traffic never reached the app).
+*   Lesson Learned: Always test new WAF managed rule sets in 'log-only' mode before enforcing.
+
+### Example 9: Secrets Manager Throttle
+*   Incident ID: INC-1108
+*   Service: kubernetes-cluster
+*   Root Cause: Hundreds of pods restarting simultaneously hit the AWS Secrets Manager API rate limit.
+*   What Worked: Deployed External Secrets Operator with caching enabled.
+*   What Failed: Staggering pod restarts manually.
+*   Lesson Learned: Always cache external secrets locally in the cluster to prevent API throttling during mass restarts.
+
+### Example 10: Kafka Retention Exhaustion
+*   Incident ID: INC-1109
+*   Service: clickstream-processor
+*   Root Cause: Disk filled up because Kafka log retention was set to 14 days instead of 3 days.
+*   What Worked: Temporarily reduced retention to 1 day to free up disk space.
+*   What Failed: Adding more brokers to the cluster.
+*   Lesson Learned: Monitor disk utilization velocity, not just static thresholds, for Kafka brokers.
+
+### Example 11: Deadlock in Payment Processing
+*   Incident ID: INC-1110
+*   Service: payment-api
+*   Root Cause: Two concurrent transactions attempted to update the same user wallet in reverse order.
+*   What Worked: Rolled back the problematic code change.
+*   What Failed: Restarting the database.
+*   Lesson Learned: Ensure consistent lock acquisition ordering across all database transactions.
+
+### Example 12: Memory Leak in Node.js
+*   Incident ID: INC-1111
+*   Service: frontend-ssr
+*   Root Cause: A global array was caching request objects indefinitely.
+*   What Worked: Patched the code to use a standard LRU cache.
+*   What Failed: Increasing the Kubernetes memory limit (OOM just happened later).
+*   Lesson Learned: Avoid global variables for caching in SSR applications.
+
+### Example 13: Redis Max Connections
+*   Incident ID: INC-1112
+*   Service: redis-cache
+*   Root Cause: A bug in a background job prevented Redis connections from being closed.
+*   What Worked: Restarted the background job workers and patched the connection handling logic.
+*   What Failed: Increasing the maxclients limit in Redis.
+*   Lesson Learned: Always use context managers or strictly ensure connection closing in background workers.
+
+### Example 14: Orphaned EBS Volumes
+*   Incident ID: INC-1113
+*   Service: kubernetes-cluster
+*   Root Cause: A script failed to clean up dynamically provisioned EBS volumes after pod termination, hitting the AWS account limit.
+*   What Worked: Manually deleted orphaned volumes and updated the storage class reclaim policy.
+*   What Failed: Attempting to schedule new pods.
+*   Lesson Learned: Implement a daily garbage collection script for orphaned cloud resources.
+
+### Example 15: CPU Throttling (CFS Quota)
+*   Incident ID: INC-1114
+*   Service: video-transcoder
+*   Root Cause: Kubernetes CPU limits (CFS quota) were set too aggressively, causing massive latency during video encoding.
+*   What Worked: Removed CPU limits entirely and relied solely on CPU requests.
+*   What Failed: Scaling out to more pods (individual pods were still throttled).
+*   Lesson Learned: Avoid setting CPU limits on CPU-bound batch processing workloads in Kubernetes.
+
+### Example 16: Third-Party API Outage
+*   Incident ID: INC-1115
+*   Service: shipping-calculator
+*   Root Cause: The external FedEx API went down, causing cascading timeouts in our checkout flow.
+*   What Worked: Enabled the circuit breaker to fail fast and fallback to flat-rate shipping.
+*   What Failed: Retrying the API requests with exponential backoff.
+*   Lesson Learned: Ensure all third-party synchronous integrations have circuit breakers configured.
+
+### Example 17: Outdated Node Image
+*   Incident ID: INC-1116
+*   Service: kubernetes-cluster
+*   Root Cause: The base OS image on the Kubernetes nodes had a kernel bug causing networking packet drops.
+*   What Worked: Rotated all nodes to a newer AMI version.
+*   What Failed: Restarting the CNI plugin.
+*   Lesson Learned: Maintain a strict 30-day node image rotation policy.
+
+### Example 18: Too Many Open Files
+*   Incident ID: INC-1117
+*   Service: websocket-server
+*   Root Cause: The OS file descriptor limit (ulimit -n) was left at the default 1024, rejecting new websocket connections.
+*   What Worked: Increased the ulimit to 65535 in the Docker container.
+*   What Failed: Scaling out the websocket server horizontally.
+*   Lesson Learned: Ensure highly concurrent services explicitly configure their file descriptor limits.
+
+### Example 19: Unindexed Foreign Keys
+*   Incident ID: INC-1118
+*   Service: order-db
+*   Root Cause: A cascading delete on the 'users' table locked the entire 'orders' table due to a missing foreign key index.
+*   What Worked: Killed the blocking transaction and created the missing index.
+*   What Failed: Restarting the application servers.
+*   Lesson Learned: Always index foreign keys in PostgreSQL to prevent full table scans during cascading deletes.
+
+### Example 20: SQS Message Size Limit
+*   Incident ID: INC-1119
+*   Service: reporting-worker
+*   Root Cause: An attempt to send a 500KB JSON payload to AWS SQS failed because the limit is 256KB.
+*   What Worked: Switched to using the SQS Extended Client Library (which offloads large payloads to S3).
+*   What Failed: Attempting to compress the payload (still too large).
+*   Lesson Learned: Never send unbounded payloads directly into SQS; always use the Extended Client for payloads > 256KB.
